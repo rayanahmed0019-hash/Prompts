@@ -1,0 +1,9 @@
+{
+  "name": "dev-prompts",
+  "version": "2.0.0",
+  "description": "175 AI Prompts for Developers",
+  "private": true,
+  "engines": {
+    "node": "20.x"
+  }
+}
