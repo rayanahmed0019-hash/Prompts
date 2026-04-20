@@ -1,0 +1,72 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SURL = 'https://izyutyuqykdyiuprnmnm.supabase.co';
+const SKEY = 'YOUR_ANON_KEY_HERE'; // keep anon key
+
+const sb = window.supabase.createClient(SURL, SKEY);
+
+// ✅ Better session handling
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    window.location.href = '/app.html';
+  }
+});
+
+// Also check once on load
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) window.location.href = '/app.html';
+})();
+
+let loading = false;
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  if (loading) return;
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('loginBtn');
+  const msg = document.getElementById('msg');
+
+  if (!email || !password) {
+    msg.className = 'msg err';
+    msg.textContent = 'Please fill all fields.';
+    return;
+  }
+
+  loading = true;
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  const { error } = await sb.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    // ✅ Better error message for your system
+    msg.className = 'msg err';
+    msg.textContent = 'Invalid login OR check your email to set password first.';
+    btn.disabled = false;
+    btn.textContent = 'Login →';
+    loading = false;
+  } else {
+    msg.className = 'msg ok';
+    msg.textContent = 'Success! Redirecting...';
+  }
+});
+
+// Enter key support
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    document.getElementById('loginBtn').click();
+  }
+});
+
+// ✅ Put your real Gumroad link here
+document.getElementById('buyBtn').addEventListener('click', () => {
+  window.open('https://your-gumroad-link.com', '_blank');
+});
+</script>
